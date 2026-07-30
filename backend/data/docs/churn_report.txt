@@ -1,0 +1,6 @@
+TechNova Mijozlar Yo'qotish (Churn) Tahlili — 2025 4-chorak
+2025-yil 4-chorakda mijozlar yo'qotish darajasi 8.2% ni tashkil etdi, bu oldingi chorakdan yuqori.
+Asosiy sabablar: (1) narxlar raqobatchilarga nisbatan yuqori deb topilgan, (2) mijozlar
+texnik yordam javob berish tezligidan norozi bo'lgan, (3) SalesPro'da kerakli integratsiyalar yo'qligi.
+Eng ko'p yo'qotish kichik biznes segmentida kuzatilgan — ular narxga sezgir.
+Yirik korporativ mijozlar orasida yo'qotish past, atigi 2.1%.
