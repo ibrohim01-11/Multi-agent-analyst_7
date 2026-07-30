@@ -1,5 +1,16 @@
 # TechNova Multi-Agent AI Analyst
 
+
+## 🔗 Jonli demo
+
+- **Frontend (ishlatish uchun):** https://multi-agent-analyst-7.vercel.app
+- **Backend API:** https://multi-agent-analyst-7.onrender.com
+- **GitHub:** https://github.com/ibrohim01-11/Multi-agent-analyst_7
+
+> Eslatma: backend Render'ning bepul tarifida ishlaydi — agar 15 daqiqa
+> foydalanilmasa "uxlab qoladi", birinchi so'rov 30-50 soniya kutishi mumkin.
+
+
 Supervisor tomonidan boshqariladigan, 4 ta mutaxassis agent (Retriever, Web, SQL, Code)
 va Critic (sifat nazorati) dan iborat multi-agent AI tizimi. `Multi_Agent_AI_Analyst_Guide_EN.html`
 asosida qurilgan, F1-F14 to'liq bajarilgan.
