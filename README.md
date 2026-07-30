@@ -106,3 +106,13 @@ F5 SQL agent (read-only) · F6 Code agent (sandboxed) · F7 Supervisor/Router ·
 F8 Critic/Verifier · F9 LangGraph wiring · F10 Long-term memory ·
 F11 Evaluation harness · F12 Langfuse observability · F13 Streaming frontend ·
 F14 Deployment (Render + Vercel)
+
+
+## Eslatma: F11 va F12
+
+F11 (Evaluation) va F12 (Langfuse observability) — `test.ipynb` notebook'da
+to'liq amalga oshirilgan va sinab ko'rilgan (natijalar notebook ichida saqlangan,
+jumladan RAGAS bug'i tufayli custom LLM-based metrikalar bilan, va Langfuse
+trace'lari orqali). Production backend (`backend/agents.py`) esa faqat runtime
+uchun zarur qismlarni (F1-F10, F13-F14) o'z ichiga oladi — chunki evaluation va
+tracing bir martalik tahlil vositalari, doimiy server funksiyasi emas.
