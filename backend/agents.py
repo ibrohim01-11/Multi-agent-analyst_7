@@ -49,6 +49,7 @@ class AgentState(TypedDict):
     answer: Optional[str]
     steps: List[str]
     revisions: int
+    last_ok: bool
 
 
 # ---------------------------------------------------------------------------
@@ -347,7 +348,10 @@ def critic(state: AgentState):
         f"Berilgan javob: {state['answer']}\n\n"
         f"Bu javob to'g'rimi VA to'liq dalillar bilan asoslanganmi?"
     )
-    return {"revisions": state["revisions"] + (0 if verdict.ok else 1)}
+    return {
+        "revisions": state["revisions"] + (0 if verdict.ok else 1),
+        "last_ok": verdict.ok,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -358,9 +362,11 @@ def route_after_supervisor(state: AgentState):
 
 
 def route_after_critic(state: AgentState):
+    if state.get("last_ok"):
+        return "finish"
     if state["revisions"] >= 2:
         return "finish"
-    return "finish" if state["revisions"] == 0 else "revise"
+    return "revise"
 
 
 def build_graph():
@@ -394,7 +400,7 @@ def new_state(question: str) -> AgentState:
     return {
         "question": question, "plan": "", "documents": [],
         "sql_result": None, "code_result": None, "answer": None,
-        "steps": [], "revisions": 0,
+        "steps": [], "revisions": 0, "last_ok": False,
     }
 
 
