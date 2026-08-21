@@ -188,13 +188,18 @@ def retriever_agent(state: AgentState):
 def web_agent(state: AgentState):
     if not TAVILY_API_KEY:
         return {"steps": state["steps"] + ["web(skipped)"]}
-    from tavily import TavilyClient
-    client = TavilyClient(api_key=TAVILY_API_KEY)
-    hits = client.search(state["question"], search_depth="advanced")["results"]
-    return {
-        "documents": state["documents"] + [h["content"] for h in hits],
-        "steps": state["steps"] + ["web"],
-    }
+    try:
+        from tavily import TavilyClient
+        client = TavilyClient(api_key=TAVILY_API_KEY)
+        hits = client.search(state["question"], search_depth="advanced")["results"]
+        return {
+            "documents": state["documents"] + [h["content"] for h in hits],
+            "steps": state["steps"] + ["web"],
+        }
+    except Exception as e:
+        # Never let a Tavily failure (bad key, rate limit, network) crash the graph
+        # mid-stream — return cleanly so the supervisor can still finish the turn.
+        return {"steps": state["steps"] + [f"web(error:{type(e).__name__})"]}
 
 
 # ---------------------------------------------------------------------------
