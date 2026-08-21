@@ -336,6 +336,24 @@ def supervisor(state: AgentState):
             "steps": state["steps"] + [f"supervisor→{forced_next}(forced)"],
         }
 
+    # Deterministic safety net #2: don't let the router retry the same agent
+    # forever when it isn't producing evidence (e.g. a web search that returns
+    # zero results). Count attempts by base agent name, ignoring any
+    # "(error:...)" suffix, and force finish once an agent has been tried
+    # twice without success — this is what actually makes the "bounded loop"
+    # claim true, instead of relying only on the 15-step recursion limit.
+    attempt_counts = {}
+    for step in state["steps"]:
+        base = step.split("(")[0]
+        if base in ("retriever", "web", "data", "code"):
+            attempt_counts[base] = attempt_counts.get(base, 0) + 1
+    if decision.next in ("retriever", "web", "data", "code") and attempt_counts.get(decision.next, 0) >= 2:
+        return {
+            "plan": "finish",
+            "documents": updated_docs,
+            "steps": state["steps"] + [f"supervisor→finish(gave up on {decision.next})"],
+        }
+
     return {
         "plan": decision.next,
         "documents": updated_docs,
@@ -347,6 +365,16 @@ def supervisor(state: AgentState):
 # Generate — final answer
 # ---------------------------------------------------------------------------
 def generate(state: AgentState):
+    has_any_evidence = bool(state["documents"]) or bool(state["sql_result"]) or bool(state["code_result"])
+    if not has_any_evidence:
+        answer = (
+            "Kechirasiz, bu savol bo'yicha ishonchli ma'lumot topa olmadim "
+            "(hujjatlar, ma'lumotlar bazasi yoki veb-qidiruv orqali). "
+            "Boshqacharoq so'rab ko'rishingiz mumkin."
+        )
+        save_to_memory(state["question"], answer)
+        return {"answer": answer}
+
     prompt = f"""Savol: {state['question']}
 
 Yig'ilgan dalillar:
