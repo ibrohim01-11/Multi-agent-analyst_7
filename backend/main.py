@@ -50,13 +50,22 @@ def ask_stream(question: str):
     """Server-Sent Events (SSE) orqali har bir agent qadamini jonli oqim sifatida yuboradi."""
 
     def event_generator():
-        for node_name, node_output in stream_question(question):
-            payload = {"node": node_name}
-            if node_output.get("plan"):
-                payload["plan"] = node_output["plan"]
-            if node_output.get("answer"):
-                payload["answer"] = node_output["answer"]
-            yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+        try:
+            for node_name, node_output in stream_question(question):
+                payload = {"node": node_name}
+                if node_output.get("plan"):
+                    payload["plan"] = node_output["plan"]
+                if node_output.get("answer"):
+                    payload["answer"] = node_output["answer"]
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+        except Exception as e:
+            # Safety net: whatever fails, the frontend must still get a response
+            # instead of hanging forever waiting for an event that never comes.
+            error_payload = {
+                "node": "error",
+                "answer": f"Xatolik yuz berdi ({type(e).__name__}). Iltimos, savolni qayta yuboring.",
+            }
+            yield f"data: {json.dumps(error_payload, ensure_ascii=False)}\n\n"
         yield "event: done\ndata: {}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
